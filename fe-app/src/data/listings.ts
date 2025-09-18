@@ -30,20 +30,17 @@ export interface StayApiResponse {
 }
 
 // ✅ đặt tên rõ ràng là mapper
-export function mapStay(post: StayApiResponse, index: number): StayDataType {
+export function mapStay(post: StayApiResponse): StayDataType {
     const category =
         DEMO_STAY_CATEGORIES.find((cat) => cat.id === post.listingCategoryId) ||
         DEMO_STAY_CATEGORIES[0];
-    // const author =
-    //     DEMO_AUTHORS.find((user) => user.id === Number(post.authorId)) ||
-    //     DEMO_AUTHORS[0]; // fallback nếu không tìm thấy
 
     return {
         ...post,
-        saleOff: !index ? '-20% today' : post.saleOff,
-        isAds: !index ? true : post.isAds,
-        // author,
+        saleOff: post.saleOff, // giữ nguyên
+        isAds: post.isAds ?? false, // backend trả gì thì lấy, default = false
         category,
         description: post.description || 'Chưa có mô tả',
     };
 }
+

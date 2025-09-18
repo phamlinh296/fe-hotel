@@ -4,20 +4,31 @@ import { StayFilter } from '@/components/StayFilter';
 import PaginationCus from '@/components/PaginationCus';
 import { mapStay, type StayApiResponse } from '@/data/listings';
 import type { StayDataType } from '@/types/stay';
+import api from '@/api/axios';
 
 const ITEMS_PER_PAGE = 8;
 
 export default function StayPage() {
+    const [allStays, setAllStays] = useState<StayDataType[]>([]);
     const [filteredData, setFilteredData] = useState<StayDataType[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
 
+    // ✅ Fetch dữ liệu 1 lần, lưu cả gốc và filtered
     useEffect(() => {
-        fetch('http://localhost:8080/stay')
-            .then((res) => res.json())
-            .then((data: StayApiResponse[]) => {
-                const mapped = data.map((item, idx) => mapStay(item, idx));
-                setFilteredData(mapped);
-            });
+        const fetchStays = async () => {
+            try {
+                const res = await api.get('/stay');
+                const stays: StayDataType[] = res.data.data.map(
+                    (item: StayApiResponse) => mapStay(item),
+                );
+                setAllStays(stays);
+                setFilteredData(stays);
+            } catch (error) {
+                console.error('Lỗi khi fetch /stay:', error);
+            }
+        };
+
+        fetchStays();
     }, []);
 
     const totalPages = Math.ceil(filteredData.length / ITEMS_PER_PAGE);
@@ -28,6 +39,7 @@ export default function StayPage() {
         return filteredData.slice(start, end);
     }, [filteredData, currentPage]);
 
+    // ✅ Logic chèn quảng cáo
     const injectAds = useCallback((items: StayDataType[]): StayDataType[] => {
         const ads = items.filter((item) => item.isAds);
         const normal = items.filter((item) => !item.isAds);
@@ -60,6 +72,7 @@ export default function StayPage() {
         [currentItems, injectAds],
     );
 
+    // ✅ Nhận dữ liệu lọc từ StayFilter
     const handleFilterChange = useCallback((data: StayDataType[]) => {
         setFilteredData(data);
         setCurrentPage(1);
@@ -73,7 +86,8 @@ export default function StayPage() {
                 </h2>
             </div>
 
-            <StayFilter data={filteredData} onFilter={handleFilterChange} />
+            {/* ✅ Truyền allStays làm data gốc cho filter */}
+            <StayFilter data={allStays} onFilter={handleFilterChange} />
 
             <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 justify-center'>
                 {displayedItems.map((stay) => (
