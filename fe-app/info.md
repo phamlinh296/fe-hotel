@@ -10,6 +10,7 @@ php artisan db:seed
 
 php artisan db:seed --class=GuestSeeder
 php artisan db:seed --class=HomestaySeeder
+php artisan db:seed --class=AuthorSeeder
 
 chạy tất cả file seed:
 
