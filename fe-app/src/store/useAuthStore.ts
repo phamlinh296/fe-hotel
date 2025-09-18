@@ -29,15 +29,21 @@ export const useAuthStore = create<AuthState>()(
             isSigningUp: false,
             isUpdatingProfile: false,
 
+            //  ĐÃ SỬA: Lấy data.data.user và data.data.token
             login: async ({ email, password }) => {
                 set({ isLoggingIn: true });
                 try {
-                    const { data } = await api.post('/guest/login', {
+                    const response = await api.post('/auth/login', {
                         email,
                         password,
                     });
-                    localStorage.setItem('token', data.token); // giả sử trả về token
-                    set({ authUser: data.user });
+
+                    // Lấy data từ response.data.data
+                    const apiData = response.data.data;
+                    console.log('Login response data:', apiData);
+                    localStorage.setItem('token', apiData.token);
+                    set({ authUser: apiData.user });
+
                     toast.success('Đăng nhập thành công');
                 } catch (error) {
                     toast.error('Sai email hoặc mật khẩu');
@@ -53,7 +59,7 @@ export const useAuthStore = create<AuthState>()(
                     const token = localStorage.getItem('token');
                     if (token) {
                         await api.post(
-                            '/guest/logout',
+                            '/auth/logout',
                             {},
                             {
                                 headers: { Authorization: `Bearer ${token}` },
@@ -61,7 +67,6 @@ export const useAuthStore = create<AuthState>()(
                         );
                     }
                 } catch (error) {
-                    // Có thể ignore báo lỗi logout
                     console.error('Logout error:', error);
                 } finally {
                     localStorage.removeItem('token');
@@ -71,15 +76,16 @@ export const useAuthStore = create<AuthState>()(
                 }
             },
 
+            //  ĐÃ SỬA: Giả sử /auth/register cũng trả về cấu trúc tương tự
             signup: async (data) => {
                 set({ isSigningUp: true });
                 try {
-                    const { data: res } = await api.post(
-                        '/guest/register',
-                        data,
-                    );
-                    localStorage.setItem('token', res.token);
-                    set({ authUser: res.user });
+                    const response = await api.post('/auth/register', data);
+                    const apiData = response.data.data; // 👈 giống login
+
+                    localStorage.setItem('token', apiData.token);
+                    set({ authUser: apiData.user });
+
                     toast.success('Tạo tài khoản thành công');
                 } catch (error) {
                     toast.error('Đăng ký thất bại');
@@ -89,18 +95,18 @@ export const useAuthStore = create<AuthState>()(
                 }
             },
 
+            //  ĐÃ SỬA: Giả sử /auth/profile trả về user trong data.data.user
             updateProfile: async (data) => {
                 set({ isUpdatingProfile: true });
                 try {
                     const token = localStorage.getItem('token');
-                    const { data: res } = await api.put(
-                        '/guest/profile',
-                        data,
-                        {
-                            headers: { Authorization: `Bearer ${token}` },
-                        },
-                    );
-                    set({ authUser: res.user });
+                    const response = await api.put('/auth/profile', data, {
+                        headers: { Authorization: `Bearer ${token}` },
+                    });
+
+                    const apiData = response.data.data; // 👈 đồng bộ cấu trúc
+
+                    set({ authUser: apiData.user });
                     toast.success('Cập nhật hồ sơ thành công');
                 } catch (error) {
                     toast.error('Không thể cập nhật hồ sơ');
@@ -111,7 +117,7 @@ export const useAuthStore = create<AuthState>()(
             },
         }),
         {
-            name: 'luxe-auth-storage', // key lưu trong localStorage
+            name: 'luxe-auth-storage',
         },
     ),
 );
