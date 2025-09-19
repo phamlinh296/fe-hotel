@@ -49,7 +49,7 @@ export const register = async (
     return res.data;
 };
 
-export const logout = () => api.post('/logout');
+export const logout = () => api.post('/auth/logout');
 
 export const getUser = () => api.get('/user');
 // add

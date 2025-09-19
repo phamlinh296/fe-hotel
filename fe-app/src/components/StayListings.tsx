@@ -20,14 +20,13 @@ export default function StayListing() {
     useEffect(() => {
         const fetchStays = async () => {
             try {
-                const res = await api.get('/stay');
+                const res = await api.get('/hotels');
                 const staysWithCategory: StayDataType[] = res.data.data.map(
-                    (post: StayApiResponse, index: number) =>
-                        mapStay(post, index),
+                    (post: StayApiResponse) => mapStay(post),
                 );
                 setStays(staysWithCategory);
             } catch (error) {
-                console.error('Lỗi khi fetch /stay:', error);
+                console.error('Lỗi khi fetch /hotels:', error);
             } finally {
                 setLoading(false);
             }
@@ -51,7 +50,7 @@ export default function StayListing() {
                     <h2 className='text-3xl font-semibold'>Nổi bật</h2>
                     <Flame className='inline-block text-red-500 h-8 w-8' />
                 </div>
-                <Link to='/stay'>
+                <Link to='/hotels'>
                     <Button variant='link'>Xem tất cả</Button>
                 </Link>
             </div>

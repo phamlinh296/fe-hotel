@@ -50,11 +50,12 @@ export interface SignupPayload {
 }
 
 export interface UpdateProfilePayload {
-  name?: string;
-  nickname?: string;
-  dob?: string;
-  phone?: string;
-  address?: string;
-  gender?: string;
-  profilePic?: string;
+    name?: string;
+    nickname?: string;
+    email?: string;
+    dob?: string;
+    phone?: string;
+    address?: string;
+    gender?: string;
+    profilePic?: File | string | null;
 }

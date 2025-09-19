@@ -38,7 +38,7 @@ export default function GallerySlider({
     imageClass = '',
     uniqueID = 'gallery-slider',
     galleryClass = 'rounded-xl',
-    href = '/stay-detail',
+    href = '/hotels',
     navigation = true,
     id,
 }: GallerySliderProps) {

@@ -47,21 +47,17 @@ const ProfileUserPage = () => {
     const email = profile?.email || '';
 
     // Upload avatar
-    const handleImageUpload = async (
-        e: React.ChangeEvent<HTMLInputElement>,
-    ) => {
+    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
         const reader = new FileReader();
         reader.readAsDataURL(file);
-        reader.onload = async () => {
+        reader.onload = () => {
             const base64Image = reader.result as string;
-            setSelectedImg(base64Image);
-            if (profile) {
-                await updateProfile({ ...profile, profilePic: base64Image });
-            }
+            setSelectedImg(base64Image); // chỉ preview
         };
     };
+
 
     // Handle thay đổi input
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
